@@ -30,6 +30,7 @@
 #include <ros/ros.h>
 #include <yolo3/ImageDetections.h>
 
+#include <atomic>  // NOLINT(build/c++11)
 #include <chrono>  // NOLINT(build/c++11)
 #include <condition_variable>
 #include <mutex>
@@ -44,7 +45,7 @@ namespace
 darknet::Detector yolo;
 ros::Publisher publisher;
 image im = {};
-float *image_data = nullptr;
+std::atomic<float*> image_data = nullptr;
 ros::Time timestamp;
 std::mutex mutex;
 std::condition_variable im_condition;
