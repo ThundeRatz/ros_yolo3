@@ -28,7 +28,7 @@
 #include <ros/console.h>
 #include <ros/package.h>
 #include <ros/ros.h>
-#include <yolo2/ImageDetections.h>
+#include <yolo3/ImageDetections.h>
 
 #include <chrono>  // NOLINT(build/c++11)
 #include <condition_variable>
@@ -37,7 +37,7 @@
 #include <vector>
 #include <thread>
 
-#include "darknet/yolo2.h"
+#include "darknet/yolo3.h"
 
 namespace
 {
@@ -64,15 +64,15 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 }
 }  // namespace
 
-namespace yolo2
+namespace yolo3
 {
-class Yolo2Nodelet : public nodelet::Nodelet
+class Yolo3Nodelet : public nodelet::Nodelet
 {
  public:
   virtual void onInit()
   {
     ros::NodeHandle& node = getPrivateNodeHandle();
-    const std::string NET_DATA = ros::package::getPath("yolo2") + "/data/";
+    const std::string NET_DATA = ros::package::getPath("yolo3") + "/data/";
     std::string config = NET_DATA + "yolo.cfg", weights = NET_DATA + "yolo.weights";
     double confidence, nms;
     node.param<double>("confidence", confidence, .8);
@@ -81,12 +81,12 @@ class Yolo2Nodelet : public nodelet::Nodelet
 
     image_transport::ImageTransport transport = image_transport::ImageTransport(node);
     subscriber = transport.subscribe("image", 1, imageCallback);
-    publisher = node.advertise<yolo2::ImageDetections>("detections", 5);
+    publisher = node.advertise<yolo3::ImageDetections>("detections", 5);
 
     yolo_thread = new std::thread(run_yolo);
   }
 
-  ~Yolo2Nodelet()
+  ~Yolo3Nodelet()
   {
     yolo_thread->join();
     delete yolo_thread;
@@ -115,7 +115,7 @@ class Yolo2Nodelet : public nodelet::Nodelet
         image_data = nullptr;
         stamp = timestamp;
       }
-      boost::shared_ptr<yolo2::ImageDetections> detections(new yolo2::ImageDetections);
+      boost::shared_ptr<yolo3::ImageDetections> detections(new yolo3::ImageDetections);
       *detections = yolo.detect(data);
       detections->header.stamp = stamp;
       publisher.publish(detections);
@@ -123,6 +123,6 @@ class Yolo2Nodelet : public nodelet::Nodelet
     }
   }
 };
-}  // namespace yolo2
+}  // namespace yolo3
 
-PLUGINLIB_EXPORT_CLASS(yolo2::Yolo2Nodelet, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(yolo3::Yolo3Nodelet, nodelet::Nodelet)

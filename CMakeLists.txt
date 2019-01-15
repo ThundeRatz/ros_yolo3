@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(yolo2)
+project(yolo3)
 
 option(CUDNN "Enable CuDNN" OFF)
 option(FORTIFY "Fortify GCC compilation" OFF)
@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 find_package(CUDA REQUIRED)
 
-roslint_cpp(include/darknet/yolo2.h src/darknet/yolo2.cpp src/yolo2_node.cpp src/yolo2_nodelet.cpp)
+roslint_cpp(include/darknet/yolo3.h src/darknet/yolo3.cpp src/yolo3_node.cpp src/yolo3_nodelet.cpp)
 roslint_add_test()
 
 ## To declare and build messages, services or actions from within this
@@ -73,7 +73,7 @@ include_directories(
   darknet/src
 )
 
-cuda_add_library(yolo2
+cuda_add_library(yolo3
   darknet/src/activation_kernels.cu
   darknet/src/activation_layer.c
   darknet/src/activations.c
@@ -122,25 +122,25 @@ cuda_add_library(yolo2
   darknet/src/tree.c
   darknet/src/utils.c
 )
-cuda_add_cublas_to_target(yolo2)
+cuda_add_cublas_to_target(yolo3)
 
-target_link_libraries(yolo2
+target_link_libraries(yolo3
   ${CUDA_LIBRARIES}
   ${CUDA_curand_LIBRARY}
 )
 if (${CUDNN})
-  target_link_libraries(yolo2
+  target_link_libraries(yolo3
     cudnn
   )
 endif()
 
-add_library(yolo2_nodelet
-  src/yolo2_nodelet.cpp
-  src/darknet/yolo2.cpp
+add_library(yolo3_nodelet
+  src/yolo3_nodelet.cpp
+  src/darknet/yolo3.cpp
 )
-add_dependencies(yolo2_nodelet yolo2_generate_messages_cpp)
+add_dependencies(yolo3_nodelet yolo3_generate_messages_cpp)
 
-target_link_libraries(yolo2_nodelet
-  yolo2
+target_link_libraries(yolo3_nodelet
+  yolo3
   ${catkin_LIBRARIES}
 )

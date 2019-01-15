@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef DARKNET_YOLO2_H
-#define DARKNET_YOLO2_H
+#ifndef DARKNET_YOLO3_H
+#define DARKNET_YOLO3_H
 
 #include <image_transport/image_transport.h>
-#include <yolo2/Detection.h>
-#include <yolo2/ImageDetections.h>
+#include <yolo3/Detection.h>
+#include <yolo3/ImageDetections.h>
 
 #include <string>
 #include <vector>
@@ -50,10 +50,10 @@ class Detector
   void load(std::string& model_file, std::string& trained_file, double min_confidence, double nms);
   ~Detector();
   image convert_image(const sensor_msgs::ImageConstPtr& msg);
-  yolo2::ImageDetections detect(float *data);
+  yolo3::ImageDetections detect(float *data);
 
  private:
-  std::vector<yolo2::Detection> forward(float *data);
+  std::vector<yolo3::Detection> forward(float *data);
 
   double min_confidence_, nms_;
   network net_;
@@ -62,4 +62,4 @@ class Detector
 };
 }  // namespace darknet
 
-#endif  // DARKNET_YOLO2_H
+#endif  // DARKNET_YOLO3_H

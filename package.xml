@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package>
-  <name>yolo2</name>
+  <name>yolo3</name>
   <version>0.0.1</version>
-  <description>YOLO2 integration with ROS</description>
+  <description>YOLO3 integration with ROS</description>
 
   <maintainer email="tiago.shibata@thunderatz.org">Tiago Koji Castro Shibata</maintainer>
   <author email="tiago.shibata@thunderatz.org">Tiago Koji Castro Shibata</author>
 
   <license>MIT</license>
   <url type="website">http://thunderatz.org</url>
-  <url type="repository">https://github.com/ThundeRatz/ros_yolo2</url>
+  <url type="repository">https://github.com/ThundeRatz/ros_yolo3</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 

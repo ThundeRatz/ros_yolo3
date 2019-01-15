@@ -11,21 +11,21 @@ If using `wstool`, the following `.rosinstall` entry adds this repository to you
 
 ```
 - git:
-    local-name: yolo2
-    uri: https://github.com/ThundeRatz/ros_yolo2.git
+    local-name: yolo3
+    uri: https://github.com/ThundeRatz/ros_yolo3.git
 ```
 
-If building from source, change to the `src` directory of your workspace and use `git clone --recursive https://github.com/tiagoshibata/ros_yolo2.git` to download with submodules.
+If building from source, change to the `src` directory of your workspace and use `git clone --recursive https://github.com/tiagoshibata/ros_yolo3.git` to download with submodules.
 
-This repository is using ROS's [nodelet API](http://wiki.ros.org/nodelet), which allows loading multiple nodelets in the same process, supporting zero-copy message transfers between nodelets. No node executables are built; instead, shared libraries are. To use them, check the nodelet docs and [tutorials](http://wiki.ros.org/nodelet/Tutorials). This sample launchfile creates a nodelet manager with an uvc_camera and a yolo2 nodelet:
+This repository is using ROS's [nodelet API](http://wiki.ros.org/nodelet), which allows loading multiple nodelets in the same process, supporting zero-copy message transfers between nodelets. No node executables are built; instead, shared libraries are. To use them, check the nodelet docs and [tutorials](http://wiki.ros.org/nodelet/Tutorials). This sample launchfile creates a nodelet manager with an uvc_camera and a yolo3 nodelet:
 
 ```
 <launch>
   <group ns="vision">
     <node pkg="nodelet" type="nodelet" name="vision_nodelet" args="manager"/>
     <node pkg="nodelet" type="nodelet" name="camera" args="load uvc_camera/CameraNodelet vision_nodelet" />
-    <remap from="yolo2/image" to="image_raw" />
-    <node pkg="nodelet" type="nodelet" name="yolo2" args="load yolo2/Yolo2Nodelet vision_nodelet">
+    <remap from="yolo3/image" to="image_raw" />
+    <node pkg="nodelet" type="nodelet" name="yolo3" args="load yolo3/Yolo3Nodelet vision_nodelet">
       <param name="confidence" value="0.5" />
       <param name="nms" value="0.4" />
     </node>
@@ -38,7 +38,7 @@ Copy your network config to `data/yolo.cfg` and network weights as `data/yolo.we
 
 ## Message format
 
-For every image received, an [ImageDetections](msg/ImageDetections.msg) message is generated at the `yolo2_detections` topic, containing a Header and a vector of [Detection](msg/Detection.msg). The header time stamp is copied from the received image message; this way, a set of detections can be matched to a specific image. Each [Detection](msg/Detection.msg) contains the following attributes:
+For every image received, an [ImageDetections](msg/ImageDetections.msg) message is generated at the `yolo3_detections` topic, containing a Header and a vector of [Detection](msg/Detection.msg). The header time stamp is copied from the received image message; this way, a set of detections can be matched to a specific image. Each [Detection](msg/Detection.msg) contains the following attributes:
 
 * `uint32 class_id` - Class number configured during training;
 * `float32 confidence` - Confidence;

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#include "darknet/yolo2.h"
+#include "darknet/yolo3.h"
 
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/image_encodings.h>
-#include <yolo2/Detection.h>
-#include <yolo2/ImageDetections.h>
+#include <yolo3/Detection.h>
+#include <yolo3/ImageDetections.h>
 
 #include <cstdint>
 #include <cstdlib>
@@ -71,9 +71,9 @@ Detector::~Detector()
   free_network(net_);
 }
 
-yolo2::ImageDetections Detector::detect(float *data)
+yolo3::ImageDetections Detector::detect(float *data)
 {
-  yolo2::ImageDetections detections;
+  yolo3::ImageDetections detections;
   detections.detections = forward(data);
   return detections;
 }
@@ -111,7 +111,7 @@ image Detector::convert_image(const sensor_msgs::ImageConstPtr& msg)
   return resized;
 }
 
-std::vector<yolo2::Detection> Detector::forward(float *data)
+std::vector<yolo3::Detection> Detector::forward(float *data)
 {
   float *prediction = network_predict(net_, data);
   layer output_layer = net_.layers[net_.n - 1];
@@ -126,14 +126,14 @@ std::vector<yolo2::Detection> Detector::forward(float *data)
 
   int num_classes = output_layer.classes;
   do_nms(boxes_.data(), probs_.data(), output_layer.w * output_layer.h * output_layer.n, num_classes, nms_);
-  std::vector<yolo2::Detection> detections;
+  std::vector<yolo3::Detection> detections;
   for (unsigned i = 0; i < probs_.size(); i++)
   {
     int class_id = max_index(probs_[i], num_classes);
     float prob = probs_[i][class_id];
     if (prob)
     {
-      yolo2::Detection detection;
+      yolo3::Detection detection;
       box b = boxes_[i];
 
       detection.x = b.x;

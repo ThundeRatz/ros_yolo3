@@ -1,5 +1,5 @@
-<library path="lib/libyolo2_nodelet">
-  <class name="yolo2/Yolo2Nodelet" type="yolo2::Yolo2Nodelet" base_class_type="nodelet::Nodelet">
-    <description>YOLO2 nodelet.</description>
+<library path="lib/libyolo3_nodelet">
+  <class name="yolo3/Yolo3Nodelet" type="yolo3::Yolo3Nodelet" base_class_type="nodelet::Nodelet">
+    <description>YOLO3 nodelet.</description>
   </class>
 </library>
