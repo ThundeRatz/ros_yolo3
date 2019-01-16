@@ -41,6 +41,7 @@ extern "C"
 #include "parser.h"  // NOLINT(build/include)
 #include "region_layer.h"  // NOLINT(build/include)
 #include "utils.h"  // NOLINT(build/include)
+detection *make_network_boxes(network *net, float thresh, int *num);
 #define __cplusplus
 }
 
@@ -51,30 +52,26 @@ void Detector::load(std::string& model_file, std::string& trained_file, double m
   min_confidence_ = min_confidence;
   nms_ = nms;
   net_ = parse_network_cfg(&model_file[0]);
-  load_weights(&net_, &trained_file[0]);
-  set_batch_network(&net_, 1);
+  load_weights(net_, &trained_file[0]);
+  set_batch_network(net_, 1);
 
-  layer output_layer = net_.layers[net_.n - 1];
-  boxes_.resize(output_layer.w * output_layer.h * output_layer.n);
-  probs_.resize(output_layer.w * output_layer.h * output_layer.n);
-  float *probs_mem = static_cast<float *>(calloc(probs_.size() * output_layer.classes, sizeof(float)));
-  for (auto& i : probs_)
-  {
-    i = probs_mem;
-    probs_mem += output_layer.classes;
-  }
+  detections_ = make_network_boxes(net_, min_confidence_, &number_of_boxes_);
 }
 
 Detector::~Detector()
 {
-  free(probs_[0]);
   free_network(net_);
+  for (int i = 0; i < number_of_boxes_; i++)
+  {
+    free(detections_[i].prob);
+  }
+  free(detections_);
 }
 
-yolo3::ImageDetections Detector::detect(float *data)
+yolo3::ImageDetections Detector::detect(float *data, int original_width, int original_height)
 {
   yolo3::ImageDetections detections;
-  detections.detections = forward(data);
+  detections.detections = forward(data, original_width, original_height);
   return detections;
 }
 
@@ -102,39 +99,34 @@ image Detector::convert_image(const sensor_msgs::ImageConstPtr& msg)
     j += offset;
   }
 
-  if (net_.w == width && net_.h == height)
+  if (net_->w == static_cast<int>(width) && net_->h == static_cast<int>(height))
   {
     return im;
   }
-  image resized = resize_image(im, net_.w, net_.h);
+  image resized = letterbox_image(im, net_->w, net_->h);
   free_image(im);
   return resized;
 }
 
-std::vector<yolo3::Detection> Detector::forward(float *data)
+std::vector<yolo3::Detection> Detector::forward(float *data, int original_width, int original_height)
 {
-  float *prediction = network_predict(net_, data);
-  layer output_layer = net_.layers[net_.n - 1];
+  network_predict(net_, data);
+  layer output_layer = net_->layers[net_->n - 1];
 
-  output_layer.output = prediction;
-  if (output_layer.type == DETECTION)
-    get_detection_boxes(output_layer, 1, 1, min_confidence_, probs_.data(), boxes_.data(), 0);
-  else if (output_layer.type == REGION)
-    get_region_boxes(output_layer, 1, 1, min_confidence_, probs_.data(), boxes_.data(), 0, 0);
-  else
-    error("Last layer must produce detections\n");
+  int count = get_yolo_detections(output_layer, original_width, original_height, net_->w, net_->h, min_confidence_, 0, 1, detections_);
 
   int num_classes = output_layer.classes;
-  do_nms(boxes_.data(), probs_.data(), output_layer.w * output_layer.h * output_layer.n, num_classes, nms_);
+  if (nms_)
+    do_nms_sort(detections_, number_of_boxes_, num_classes, nms_);
   std::vector<yolo3::Detection> detections;
-  for (unsigned i = 0; i < probs_.size(); i++)
+  for (int i = 0; i < count; i++)
   {
-    int class_id = max_index(probs_[i], num_classes);
-    float prob = probs_[i][class_id];
+    int class_id = max_index(detections_[i].prob, num_classes);
+    float prob = detections_[i].prob[class_id];
     if (prob)
     {
       yolo3::Detection detection;
-      box b = boxes_[i];
+      box b = detections_[i].bbox;
 
       detection.x = b.x;
       detection.y = b.y;

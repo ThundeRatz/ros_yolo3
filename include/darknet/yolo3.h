@@ -50,15 +50,15 @@ class Detector
   void load(std::string& model_file, std::string& trained_file, double min_confidence, double nms);
   ~Detector();
   image convert_image(const sensor_msgs::ImageConstPtr& msg);
-  yolo3::ImageDetections detect(float *data);
+  yolo3::ImageDetections detect(float *data, int original_width, int original_height);
 
  private:
-  std::vector<yolo3::Detection> forward(float *data);
+  std::vector<yolo3::Detection> forward(float *data, int original_width, int original_height);
 
   double min_confidence_, nms_;
-  network net_;
-  std::vector<box> boxes_;
-  std::vector<float *> probs_;
+  network *net_;
+  detection *detections_;
+  int number_of_boxes_;
 };
 }  // namespace darknet
 

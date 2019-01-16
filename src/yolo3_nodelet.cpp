@@ -45,13 +45,16 @@ namespace
 darknet::Detector yolo;
 ros::Publisher publisher;
 image im = {};
-std::atomic<float*> image_data = nullptr;
+float* image_data = nullptr;
 ros::Time timestamp;
 std::mutex mutex;
 std::condition_variable im_condition;
+int original_width, original_height;
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
+  original_width = msg->width;
+  original_height = msg->height;
   im = yolo.convert_image(msg);
   {
     std::lock_guard<std::mutex> lock(mutex);
@@ -117,7 +120,7 @@ class Yolo3Nodelet : public nodelet::Nodelet
         stamp = timestamp;
       }
       boost::shared_ptr<yolo3::ImageDetections> detections(new yolo3::ImageDetections);
-      *detections = yolo.detect(data);
+      *detections = yolo.detect(data, original_width, original_height);
       detections->header.stamp = stamp;
       publisher.publish(detections);
       free(data);

@@ -70,6 +70,7 @@ include_directories(
   SYSTEM ${catkin_INCLUDE_DIRS}
   SYSTEM ${CUDA_INCLUDE_DIRS}
   include
+  darknet/include
   darknet/src
 )
 
