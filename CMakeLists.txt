@@ -81,47 +81,25 @@ cuda_add_library(yolo3
   darknet/src/avgpool_layer.c
   darknet/src/avgpool_layer_kernels.cu
   darknet/src/batchnorm_layer.c
-  darknet/src/blas.c
   darknet/src/blas_kernels.cu
   darknet/src/box.c
-  darknet/src/col2im.c
-  darknet/src/col2im_kernels.cu
-  darknet/src/connected_layer.c
   darknet/src/convolutional_kernels.cu
   darknet/src/convolutional_layer.c
-  darknet/src/cost_layer.c
-  darknet/src/crnn_layer.c
-  darknet/src/crop_layer.c
-  darknet/src/crop_layer_kernels.cu
   darknet/src/cuda.c
-  darknet/src/data.c
-  darknet/src/detection_layer.c
-  darknet/src/dropout_layer.c
-  darknet/src/dropout_layer_kernels.cu
   darknet/src/gemm.c
-  darknet/src/gru_layer.c
   darknet/src/im2col.c
   darknet/src/im2col_kernels.cu
   darknet/src/image.c
   darknet/src/layer.c
   darknet/src/list.c
-  darknet/src/local_layer.c
   darknet/src/matrix.c
   darknet/src/maxpool_layer.c
   darknet/src/maxpool_layer_kernels.cu
   darknet/src/network.c
-  darknet/src/network_kernels.cu
-  darknet/src/normalization_layer.c
   darknet/src/option_list.c
   darknet/src/parser.c
-  darknet/src/region_layer.c
-  darknet/src/reorg_layer.c
-  darknet/src/rnn_layer.c
-  darknet/src/route_layer.c
-  darknet/src/shortcut_layer.c
-  darknet/src/softmax_layer.c
-  darknet/src/tree.c
   darknet/src/utils.c
+  darknet/src/yolo_layer.c
 )
 cuda_add_cublas_to_target(yolo3)
 

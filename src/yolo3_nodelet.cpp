@@ -84,7 +84,7 @@ class Yolo3Nodelet : public nodelet::Nodelet
     yolo.load(config, weights, confidence, nms);
 
     image_transport::ImageTransport transport = image_transport::ImageTransport(node);
-    subscriber = transport.subscribe("image", 1, imageCallback);
+    image_subscriber = transport.subscribe("image", 1, imageCallback);
     publisher = node.advertise<yolo3::ImageDetections>("detections", 5);
 
     yolo_thread = new std::thread(run_yolo);
@@ -97,7 +97,7 @@ class Yolo3Nodelet : public nodelet::Nodelet
   }
 
  private:
-  image_transport::Subscriber subscriber;
+  image_transport::Subscriber image_subscriber;
   std::thread *yolo_thread;
 
   static void run_yolo()
